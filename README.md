@@ -64,20 +64,13 @@ COLLATE utf8mb4_unicode_ci;
 
 ## 🔌 API Endpoints
 
-```json
-POST /api/notifications/arrival-tracking
-Content-Type: application/json
+![Request](screens/request.png)
 
-{
-  "userId": "youemail@gmail.com",
-  "title": "Votre colis arrive",
-  "message": "Livraison estimée dans 30 min",
-  "channel": "EMAIL",
-  "transportRequestId": "TR-2024-001",
-  "estimatedArrivalTime": "2024-09-09T16:30:00"
-}
-```
+![Response](screens/response.png)
+
 Réponse : `200 OK` + objet `Notification` créé.
+
+![Checking E-mail](screens/check.jpg)
 
 ---
 
