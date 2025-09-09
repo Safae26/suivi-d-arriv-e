@@ -20,7 +20,7 @@ Il s’intègre dans une architecture micro-services et envoie les alertes par *
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 - Notification « colis en approche » en temps réel  
 - Envoi **EMAIL / SMS / PUSH** (ou `ALL`)  
 - Statuts : `PENDING` → `SENT` ou `FAILED`  
@@ -31,12 +31,6 @@ Il s’intègre dans une architecture micro-services et envoie les alertes par *
 ---
 
 ## 🚀 Démarrage rapide
-```bash
-git clone https://github.com/Safae26/suivi-d-arriv-e.git
-cd suivi-d-arriv-e
-mvn clean package
-java -jar target/notifications-0.0.1-SNAPSHOT.jar
-```
 Le service écoute sur **http://localhost:8082**
 
 ---
@@ -63,8 +57,6 @@ FLUSH PRIVILEGES;
 export DB_PASSWORD='Ch@ng3M3!'
 export MAIL_PASSWORD='votre-mot-de-passe-application-gmail'
 ```
-> ⚠️ **Ne jamais commiter** `application-prod.properties` contenant les vrais mots de passe.
-
 ---
 
 ## 🔧 Structure du projet
@@ -229,13 +221,4 @@ Importez le fichier `postman/Notifications.postman_collection.json` (à créer) 
 ```
 
 ### Auteur
-**Safae ER-AJI** – s.eraji@edu.umi.ac.ma
-
-Points clés apportés :
-1. Séparation claire des profils `dev`/`prod`  
-2. Secrets externalisés (variables d’environnement)  
-3. Versions corrigées (Java 17, Spring Boot 3.5.4)  
-4. Instructions MySQL complètes  
-5. Templates prêts à copier-coller (cURL, PowerShell, Postman)  
-6. Section sécurité + bonnes pratiques  
-7. Structure markdown plus lisible et cohérente avec le code fourni.
+**Safae ERAJI** – s.eraji@edu.umi.ac.ma
