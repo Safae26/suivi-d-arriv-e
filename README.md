@@ -1,22 +1,5 @@
 # 📧 Microservice de Notifications – Suivi d’Arrivée
 
-## 📋 Table des matières
-- [🎯 Description](#-description)
-- [🛠️ Stack technique](#️-stack-technique)
-- [✨ Fonctionnalités](#-fonctionnalités)
-- [🚀 Démarrage rapide](#-démarrage-rapide)
-- [📦 Installation complète](#-installation-complète)
-- [🔧 Structure du projet](#-structure-du-projet)
-- [📡 Endpoints REST](#-endpoints-rest)
-- [🧪 Tester l’API](#-tester-lapi)
-- [📧 Configuration e-mail (Gmail)](#-configuration-e-mail-gmail)
-- [🗄️ Configuration base de données](#️-configuration-base-de-données)
-- [🔐 Sécurité des secrets](#-sécurité-des-secrets)
-- [📸 Captures d’écran](#-captures-décran)
-- [📚 Annexes](#-annexes)
-
----
-
 ## 🎯 Description
 Microservice Spring Boot chargé d’émettre des notifications de suivi d’arrivée aux clients d’une plate-forme de transport de marchandises.  
 Il s’intègre dans une architecture micro-services et envoie les alertes par **e-mail**, **SMS** et **push** (multicanal).
