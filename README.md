@@ -235,7 +235,7 @@ sequenceDiagram
     S-->>API: Notification (final)
     API-->>C: 200 OK + JSON notification
 ```
-```
+```mermaid
 classDiagram
     class NotificationController {
         +sendArrivalTracking(NotificationRequest): ResponseEntity<Notification>
