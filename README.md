@@ -194,71 +194,102 @@ spring.datasource.password=${DB_PASSWORD:changeme}
 - `email-received.png` – rendu dans la boîte mail
 ---
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#4CAF50','primaryTextColor':'#fff','primaryBorderColor':'#2E7D32','lineColor':'#424242','secondaryColor':'#FFEB3B','tertiaryColor':'#E3F2FD','background':'#FFFFFF','fontSize':'16px'}}}%%
+%%{init:{
+  "theme":"base",
+  "themeVariables":{
+    "fontFamily":"Segoe UI, Roboto, sans-serif",
+    "fontSize":"18px",
+    "primaryColor":"#ffffff",
+    "primaryTextColor":"#2d3748",
+    "primaryBorderColor":"#cbd5e0",
+    "lineColor":"#4a5568",
+    "secondaryColor":"#f7fafc",
+    "tertiaryColor":"#edf2f7",
+    "background":"#ffffff",
+    "mainBkg":"#ffffff",
+    "secondBkg":"#f7fafc",
+    "tertiaryBkg":"#edf2f7",
+    "cScale0":"#63b3ed",
+    "cScale1":"#68d391",
+    "cScale2":"#fbb6ce",
+    "cScale3":"#feb2b2",
+    "cScale4":"#d8b4fe",
+    "cScale5":"#fcd34d"
+  },
+  "sequence":{
+    "diagramMarginX":60,
+    "diagramMarginY":30,
+    "actorMargin":80,
+    "width":250,
+    "height":90,
+    "boxMargin":15,
+    "boxTextMargin":10,
+    "noteMargin":15,
+    "messageMargin":50
+  }
+}}%%
 
 sequenceDiagram
-    autonumber
-    actor Client
-    box rgb(240, 248, 255) 🟦 Micro-service Notifications
-        participant API as NotificationController
-        participant S as NotificationService
-        participant R as NotificationRepository
-        participant M as EmailService
-        participant SMS as SmsService
-        participant PNS as PushNotificationService
-    end
-    participant DB as 🗄️ MySQL
+  autonumber
+  actor Client
+  participant API as NotificationController
+  participant S as NotificationService
+  participant R as NotificationRepository
+  participant M as EmailService
+  participant SMS as SmsService
+  participant PNS as PushNotificationService
+  participant DB as MySQL
 
-    rect rgb(225, 245, 254)
-        note over Client,DB: 🔍 Création & persistance
-        Client->>API: POST /api/notifications/arrival-tracking
-        activate API
-        API->>S: createArrivalTrackingNotification(req)
-        activate S
-        S->>S: buildArrivalMessage(req)
-        S->>R: save(notification)
-        activate R
-        R->>DB: INSERT INTO notifications
-        DB-->>R: saved (id, status=PENDING)
-        R-->>S: notification
-        deactivate R
-    end
+  rect rgba(99,179,237,0.15)
+    note over Client,DB: 1️⃣ Création & persistance
+    Client->>API: POST /api/notifications/arrival-tracking
+    activate API
+    API->>S: createArrivalTrackingNotification(req)
+    activate S
+    S->>S: buildArrivalMessage(req)
+    S->>R: save(notification)
+    activate R
+    R->>DB: INSERT INTO notifications
+    DB-->>R: saved (id, status=PENDING)
+    R-->>S: notification
+    deactivate R
+  end
 
-    rect rgb(255, 243, 224)
-        note over S,PNS: 📤 Envoi multicanal
-        S->>S: sendNotification(notification)
-        opt channel = EMAIL or ALL
-            S->>M: sendEmail(userId, title, message)
-            activate M
-            M-->>S: sent = true/false
-            deactivate M
-        end
-        opt channel = SMS or ALL
-            S->>SMS: sendSms(userId, message)
-            activate SMS
-            SMS-->>S: sent = true/false
-            deactivate SMS
-        end
-        opt channel = PUSH or ALL
-            S->>PNS: sendPushNotification(userId, title, message)
-            activate PNS
-            PNS-->>S: sent = true/false
-            deactivate PNS
-        end
+  rect rgba(104,211,145,0.15)
+    note over S,PNS: 2️⃣ Envoi multicanal
+    S->>S: sendNotification(notification)
+    opt channel = EMAIL or ALL
+      S->>M: sendEmail(userId, title, message)
+      activate M
+      M-->>S: sent = true/false
+      deactivate M
     end
+    opt channel = SMS or ALL
+      S->>SMS: sendSms(userId, message)
+      activate SMS
+      SMS-->>S: sent = true/false
+      deactivate SMS
+    end
+    opt channel = PUSH or ALL
+      S->>PNS: sendPushNotification(userId, title, message)
+      activate PNS
+      PNS-->>S: sent = true/false
+      deactivate PNS
+    end
+  end
 
-    rect rgb(232, 245, 233)
-        note over S,DB: ✅ Mise à jour du statut
-        S->>S: setStatus(SENT/FAILED)
-        S->>R: save(notification)
-        activate R
-        R->>DB: UPDATE notifications
-        deactivate R
-        S-->>API: Notification finale
-        deactivate S
-        API-->>Client: 200 OK + JSON
-        deactivate API
-    end
+  rect rgba(251,182,206,0.15)
+    note over S,DB: 3️⃣ Mise à jour du statut
+    S->>S: setStatus(SENT/FAILED)
+    S->>R: save(notification)
+    activate R
+    R->>DB: UPDATE notifications
+    deactivate R
+    S-->>API: Notification finale
+    deactivate S
+    API-->>Client: 200 OK + JSON
+    deactivate API
+  end
 ```
 ```mermaid
 classDiagram
