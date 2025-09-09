@@ -1,5 +1,3 @@
-Voici le README corrigé et enrichi :
-
 # 📧 Microservice de Notifications – Suivi d’Arrivée
 
 ## 📋 Table des matières
