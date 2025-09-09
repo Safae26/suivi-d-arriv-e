@@ -53,89 +53,17 @@ notifications/
 
 ---
 
-## Base MySQL
+## Base données MySQL 🗄️
 ```sql
 CREATE DATABASE transport_db 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 ```
-
 ---
 
-## 🔌 API Endpoints
+## application.properties
 
-![Request](screens/request.png)
-
-![Response](screens/response.png)
-
-Réponse : `200 OK` + objet `Notification` créé.
-
-![Checking E-mail](screens/check.jpg)
-
----
-
-## 🚀 Démarrage rapide
-Le service écoute sur **http://localhost:8082**
-
----
-
-## 📡 Endpoints REST
-Base : `http://localhost:8082/api/notifications`
-
-| Méthode | URL | Description | Body JSON |
-|---------|-----|-------------|-----------|
-| **POST** | `/arrival-tracking` | Créer + envoyer une notification | [voir ci-dessous](#exemple-de-requête) |
-| **GET**  | `/user/{userId}` | Lister les notifications d’un utilisateur | - |
-| **GET**  | `/status/{status}` | Filtrer par statut (`PENDING`, `SENT`, `FAILED`) | - |
-
----
-
-## Tester l’API
-
-### cURL
-```bash
-curl -X POST http://localhost:8082/api/notifications/arrival-tracking \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"test@demo.com","title":"Test","message":"Hello","channel":"EMAIL","transportRequestId":"TEST-001"}'
-```
-
-### PowerShell
-```powershell
-$body = @{
-    userId = "test@demo.com"
-    title  = "Test"
-    message = "Hello depuis PowerShell"
-    channel = "ALL"
-    transportRequestId = "PS-001"
-} | ConvertTo-Json
-
-Invoke-RestMethod -Uri http://localhost:8082/api/notifications/arrival-tracking -Method Post -Body $body -ContentType "application/json"
-```
-
----
-
-## 📧 Configuration e-mail (Gmail)
-
-1. Activez **l’authentification à 2 facteurs** sur votre compte Google.  
-2. Générez un **mot de passe d’application** :  
-   https://myaccount.google.com/apppasswords  
-3. Renseignez-le dans `application-prod.properties` :
-
-```properties
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=s.eraji@edu.umi.ac.ma
-spring.mail.password=${MAIL_PASSWORD}
-spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
-spring.mail.properties.mail.smtp.starttls.required=true
-```
-
----
-
-## 🗄️ Configuration base de données
-
-### Profil `dev` (H2 embarquée)
+### Profil `dev` (H2)
 ```properties
 spring.datasource.url=jdbc:h2:mem:transport_db
 spring.datasource.driverClassName=org.h2.Driver
@@ -148,30 +76,61 @@ spring.h2.console.enabled=true
 ### Profil `prod` (MySQL)
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/transport_db
-spring.datasource.username=transport
-spring.datasource.password=${DB_PASSWORD}
+spring.datasource.username=root
+spring.datasource.password=${PASSWORD}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 ```
 
----
+### 📧 Configuration e-mail (Gmail)
 
-## 🔐 Sécurité des secrets
-- Utilisez les **variables d’environnement** ou Spring Cloud Config Server.  
-- Ajoutez `application-prod.properties` à `.gitignore`.  
-- Fournissez un template :
+1. Activez **l’authentification à 2 facteurs** sur votre compte Google.  
+2. Générez un **mot de passe d’application** :  
+   https://myaccount.google.com/apppasswords  
+3. Renseignez-le dans `application-prod.properties` :
+
 ```properties
-spring.mail.password=${MAIL_PASSWORD:changeme}
-spring.datasource.password=${DB_PASSWORD:changeme}
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=YOUR_EMAIL
+spring.mail.password=${MAIL_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
 ```
 
 ---
 
-## 📸 Captures d’écran
-- `api-response.png` – réponse Swagger / Postman  
-- `h2-console.png` – consultation des notifications  
-- `email-received.png` – rendu dans la boîte mail
+## 🚀 Démarrage rapide
+Le service écoute sur **http://localhost:8082**
+
+---
+
+## 🔌 API Endpoints - Postman
+
+![Request](screens/request.png)
+
+Réponse : `200 OK` + objet `Notification` créé.
+![Response](screens/response.png)
+
+Rendu dans la boîte mail :
+![Checking E-mail](screens/check.jpg)
+
+Console :
+![Console](screens/console.png)
+
+---
+
+### 📡 Endpoints REST
+Base : `http://localhost:8082/api/notifications`
+
+| Méthode | URL | Description | Body JSON |
+|---------|-----|-------------|-----------|
+| **POST** | `/arrival-tracking` | Créer + envoyer une notification |
+| **GET**  | `/user/{userId}` | Lister les notifications d’un utilisateur | 
+| **GET**  | `/status/{status}` | Filtrer par statut (`PENDING`, `SENT`, `FAILED`) |
+
 ---
 
 **Safae ERAJI**
