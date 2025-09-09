@@ -235,6 +235,70 @@ sequenceDiagram
     S-->>API: Notification (final)
     API-->>C: 200 OK + JSON notification
 ```
+```
+classDiagram
+    class NotificationController {
+        +sendArrivalTracking(NotificationRequest): ResponseEntity<Notification>
+        +getUserNotifications(userId): ResponseEntity<List<Notification>>
+        +getNotificationsByStatus(status): ResponseEntity<List<Notification>>
+    }
+
+    class NotificationService {
+        +createArrivalTrackingNotification(NotificationRequest): Notification
+        +sendNotification(Notification): void
+        +buildArrivalMessage(NotificationRequest): String
+        +getUserNotifications(userId): List<Notification>
+        +getNotificationsByStatus(status): List<Notification>
+    }
+
+    class EmailService {
+        +sendEmail(to, subject, text): boolean
+    }
+
+    class SmsService {
+        +sendSms(phone, message): boolean
+    }
+
+    class PushNotificationService {
+        +sendPushNotification(userId, title, message): boolean
+    }
+
+    class NotificationRepository {
+        +findByUserId(String): List<Notification>
+        +findByStatus(String): List<Notification>
+        +findByTransportRequestId(String): List<Notification>
+    }
+
+    class Notification {
+        -Long id
+        -String userId
+        -String type
+        -String title
+        -String message
+        -String status
+        -String channel
+        -String transportRequestId
+        -LocalDateTime createdAt
+        -LocalDateTime sentAt
+    }
+
+    class NotificationRequest {
+        -String userId
+        -String title
+        -String message
+        -String channel
+        -String transportRequestId
+        -LocalDateTime estimatedArrivalTime
+    }
+
+    NotificationController --> NotificationService
+    NotificationService --> NotificationRepository
+    NotificationService --> EmailService
+    NotificationService --> SmsService
+    NotificationService --> PushNotificationService
+    NotificationRepository ..> Notification : « JPA entity »
+    NotificationController ..> NotificationRequest : « DTO »
+```
 ## 📚 Annexes
 
 ### Collection Postman
