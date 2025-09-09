@@ -194,46 +194,71 @@ spring.datasource.password=${DB_PASSWORD:changeme}
 - `email-received.png` – rendu dans la boîte mail
 ---
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#4CAF50','primaryTextColor':'#fff','primaryBorderColor':'#2E7D32','lineColor':'#424242','secondaryColor':'#FFEB3B','tertiaryColor':'#E3F2FD','background':'#FFFFFF','fontSize':'16px'}}}%%
+
 sequenceDiagram
-    participant C as Client / Front
-    participant API as NotificationController
-    participant S as NotificationService
-    participant R as NotificationRepository
-    participant M as EmailService
-    participant SMS as SmsService
-    participant PNS as PushNotificationService
-    participant DB as MySQL
+    autonumber
+    actor Client
+    box rgb(240, 248, 255) 🟦 Micro-service Notifications
+        participant API as NotificationController
+        participant S as NotificationService
+        participant R as NotificationRepository
+        participant M as EmailService
+        participant SMS as SmsService
+        participant PNS as PushNotificationService
+    end
+    participant DB as 🗄️ MySQL
 
-    C->>API: POST /api/notifications/arrival-tracking
-    API->>S: createArrivalTrackingNotification(req)
-    S->>S: buildArrivalMessage(req)
-    S->>R: save(notification)
-    R->>DB: INSERT INTO notifications
-    DB-->>R: saved notification
-    R-->>S: notification (id, status=PENDING)
-    S->>S: sendNotification(notification)
-
-    alt channel = EMAIL or ALL
-        S->>M: sendEmail(userId, title, message)
-        M->>M: SimpleMailMessage
-        M-->>S: boolean sent
+    rect rgb(225, 245, 254)
+        note over Client,DB: 🔍 Création & persistance
+        Client->>API: POST /api/notifications/arrival-tracking
+        activate API
+        API->>S: createArrivalTrackingNotification(req)
+        activate S
+        S->>S: buildArrivalMessage(req)
+        S->>R: save(notification)
+        activate R
+        R->>DB: INSERT INTO notifications
+        DB-->>R: saved (id, status=PENDING)
+        R-->>S: notification
+        deactivate R
     end
 
-    alt channel = SMS or ALL
-        S->>SMS: sendSms(userId, message)
-        SMS-->>S: boolean sent
+    rect rgb(255, 243, 224)
+        note over S,PNS: 📤 Envoi multicanal
+        S->>S: sendNotification(notification)
+        opt channel = EMAIL or ALL
+            S->>M: sendEmail(userId, title, message)
+            activate M
+            M-->>S: sent = true/false
+            deactivate M
+        end
+        opt channel = SMS or ALL
+            S->>SMS: sendSms(userId, message)
+            activate SMS
+            SMS-->>S: sent = true/false
+            deactivate SMS
+        end
+        opt channel = PUSH or ALL
+            S->>PNS: sendPushNotification(userId, title, message)
+            activate PNS
+            PNS-->>S: sent = true/false
+            deactivate PNS
+        end
     end
 
-    alt channel = PUSH or ALL
-        S->>PNS: sendPushNotification(userId, title, message)
-        PNS-->>S: boolean sent
+    rect rgb(232, 245, 233)
+        note over S,DB: ✅ Mise à jour du statut
+        S->>S: setStatus(SENT/FAILED)
+        S->>R: save(notification)
+        activate R
+        R->>DB: UPDATE notifications
+        deactivate R
+        S-->>API: Notification finale
+        deactivate S
+        API-->>Client: 200 OK + JSON
+        deactivate API
     end
-
-    S->>S: update status (SENT/FAILED)
-    S->>R: save(notification)
-    R->>DB: UPDATE notifications
-    S-->>API: Notification (final)
-    API-->>C: 200 OK + JSON notification
 ```
 ```mermaid
 classDiagram
