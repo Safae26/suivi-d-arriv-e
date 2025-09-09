@@ -193,56 +193,57 @@ spring.datasource.password=${DB_PASSWORD:changeme}
 - `h2-console.png` – consultation des notifications  
 - `email-received.png` – rendu dans la boîte mail
 ---
+
 ```mermaid
 %%{init:{
   "theme":"base",
   "themeVariables":{
-    "fontFamily":"Segoe UI, Roboto, sans-serif",
-    "fontSize":"18px",
+    "fontFamily":"'Segoe UI', Roboto, sans-serif",
+    "fontSize":"16px",
     "primaryColor":"#ffffff",
-    "primaryTextColor":"#2d3748",
-    "primaryBorderColor":"#cbd5e0",
-    "lineColor":"#4a5568",
-    "secondaryColor":"#f7fafc",
-    "tertiaryColor":"#edf2f7",
+    "primaryTextColor":"#1f2937",
+    "primaryBorderColor":"#d1d5db",
+    "lineColor":"#6b7280",
+    "secondaryColor":"#f9fafb",
+    "tertiaryColor":"#f3f4f6",
     "background":"#ffffff",
     "mainBkg":"#ffffff",
-    "secondBkg":"#f7fafc",
-    "tertiaryBkg":"#edf2f7",
-    "cScale0":"#63b3ed",
-    "cScale1":"#68d391",
-    "cScale2":"#fbb6ce",
-    "cScale3":"#feb2b2",
-    "cScale4":"#d8b4fe",
-    "cScale5":"#fcd34d"
+    "secondBkg":"#f9fafb",
+    "tertiaryBkg":"#f3f4f6",
+    "cScale0":"#3b82f6",
+    "cScale1":"#10b981",
+    "cScale2":"#f59e0b",
+    "cScale3":"#ef4444",
+    "cScale4":"#8b5cf6",
+    "cScale5":"#ec4899"
   },
   "sequence":{
-    "diagramMarginX":60,
-    "diagramMarginY":30,
-    "actorMargin":80,
-    "width":250,
-    "height":90,
-    "boxMargin":15,
-    "boxTextMargin":10,
-    "noteMargin":15,
-    "messageMargin":50
+    "diagramMarginX":50,
+    "diagramMarginY":20,
+    "actorMargin":70,
+    "width":220,
+    "height":80,
+    "boxMargin":10,
+    "boxTextMargin":8,
+    "noteMargin":10,
+    "messageMargin":40
   }
 }}%%
 
 sequenceDiagram
   autonumber
-  actor Client
-  participant API as NotificationController
-  participant S as NotificationService
-  participant R as NotificationRepository
-  participant M as EmailService
-  participant SMS as SmsService
-  participant PNS as PushNotificationService
-  participant DB as MySQL
+  actor C as 👤 Client
+  participant API as 🔔 NotificationController
+  participant S as ⚙️ NotificationService
+  participant R as 🗃️ NotificationRepository
+  participant M as 📧 EmailService
+  participant SMS as 💬 SmsService
+  participant PNS as 📲 PushService
+  participant DB as 🗄️ MySQL
 
-  rect rgba(99,179,237,0.15)
-    note over Client,DB: 1️⃣ Création & persistance
-    Client->>API: POST /api/notifications/arrival-tracking
+  rect rgba(59,130,246,0.08)
+    note over C,DB: ① Création & persistance
+    C->>API: POST /api/notifications/arrival-tracking
     activate API
     API->>S: createArrivalTrackingNotification(req)
     activate S
@@ -255,105 +256,41 @@ sequenceDiagram
     deactivate R
   end
 
-  rect rgba(104,211,145,0.15)
-    note over S,PNS: 2️⃣ Envoi multicanal
+  rect rgba(16,185,129,0.08)
+    note over S,PNS: ② Envoi multicanal
     S->>S: sendNotification(notification)
-    opt channel = EMAIL or ALL
+    opt EMAIL or ALL
       S->>M: sendEmail(userId, title, message)
       activate M
       M-->>S: sent = true/false
       deactivate M
     end
-    opt channel = SMS or ALL
+    opt SMS or ALL
       S->>SMS: sendSms(userId, message)
       activate SMS
       SMS-->>S: sent = true/false
       deactivate SMS
     end
-    opt channel = PUSH or ALL
-      S->>PNS: sendPushNotification(userId, title, message)
+    opt PUSH or ALL
+      S->>PNS: sendPush(userId, title, message)
       activate PNS
       PNS-->>S: sent = true/false
       deactivate PNS
     end
   end
 
-  rect rgba(251,182,206,0.15)
-    note over S,DB: 3️⃣ Mise à jour du statut
-    S->>S: setStatus(SENT/FAILED)
+  rect rgba(245,158,11,0.08)
+    note over S,DB: ③ Mise à jour du statut
+    S->>S: setStatus(SENT|FAILED)
     S->>R: save(notification)
     activate R
     R->>DB: UPDATE notifications
     deactivate R
-    S-->>API: Notification finale
+    S-->>API: notification finale
     deactivate S
-    API-->>Client: 200 OK + JSON
+    API-->>C: 200 OK + JSON
     deactivate API
   end
-```
-```mermaid
-classDiagram
-    class NotificationController {
-        +sendArrivalTracking(NotificationRequest): ResponseEntity<Notification>
-        +getUserNotifications(userId): ResponseEntity<List<Notification>>
-        +getNotificationsByStatus(status): ResponseEntity<List<Notification>>
-    }
-
-    class NotificationService {
-        +createArrivalTrackingNotification(NotificationRequest): Notification
-        +sendNotification(Notification): void
-        +buildArrivalMessage(NotificationRequest): String
-        +getUserNotifications(userId): List<Notification>
-        +getNotificationsByStatus(status): List<Notification>
-    }
-
-    class EmailService {
-        +sendEmail(to, subject, text): boolean
-    }
-
-    class SmsService {
-        +sendSms(phone, message): boolean
-    }
-
-    class PushNotificationService {
-        +sendPushNotification(userId, title, message): boolean
-    }
-
-    class NotificationRepository {
-        +findByUserId(String): List<Notification>
-        +findByStatus(String): List<Notification>
-        +findByTransportRequestId(String): List<Notification>
-    }
-
-    class Notification {
-        -Long id
-        -String userId
-        -String type
-        -String title
-        -String message
-        -String status
-        -String channel
-        -String transportRequestId
-        -LocalDateTime createdAt
-        -LocalDateTime sentAt
-    }
-
-    class NotificationRequest {
-        -String userId
-        -String title
-        -String message
-        -String channel
-        -String transportRequestId
-        -LocalDateTime estimatedArrivalTime
-    }
-
-    NotificationController --> NotificationService
-    NotificationService --> NotificationRepository
-    NotificationService --> EmailService
-    NotificationService --> SmsService
-    NotificationService --> PushNotificationService
-    NotificationRepository ..> Notification : « JPA entity »
-    NotificationController ..> NotificationRequest : « DTO »
 ```
 ## 📚 Annexes
 
