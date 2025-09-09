@@ -137,6 +137,7 @@ Notifications d’un utilisateur :
 ![user_notif](screens/user_id.png)
 
 Filtre par statut (SENT) :
+
 ![status_sent](screens/status_sent.png)
 
 ---
