@@ -105,7 +105,7 @@ Réponse : `200 OK` + objet `Notification` créé.
 
 ---
 
-## 🧪 Tester l’API
+## Tester l’API
 
 ### cURL
 ```bash
@@ -184,8 +184,6 @@ spring.datasource.password=${DB_PASSWORD:changeme}
 ---
 
 ## 📸 Captures d’écran
-*(à ajouter dans `/screenshots`)*  
-- `architecture.png` – diagramme micro-services  
 - `api-response.png` – réponse Swagger / Postman  
 - `h2-console.png` – consultation des notifications  
 - `email-received.png` – rendu dans la boîte mail
