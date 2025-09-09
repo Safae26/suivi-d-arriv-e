@@ -21,12 +21,15 @@ Il s’intègre dans une architecture micro-services et envoie les alertes par *
 ---
 
 ## Fonctionnalités
-- Notification « colis en approche » en temps réel  
-- Envoi **EMAIL / SMS / PUSH** (ou `ALL`)  
-- Statuts : `PENDING` → `SENT` ou `FAILED`  
-- API REST documentée + DTO de requête  
-- Persistance MySQL + scripts d’initialisation  
-- Configuration externalisée (profils `dev` / `prod`)
+
+| Fonctionnalité | Détails |
+|---------------|---------|
+| 🚚 **Alerte « colis en approche »** | Diffusion en *temps-réel* dès que le chauffeur entre dans la zone de livraison. |
+| 📬 **Multi-canal** | Un seul appel ➜ e-mail **ET/OU** SMS **ET/OU** push (ou `ALL` pour tout d’un coup). |
+| 🔄 **Workflow transparent** | Statuts automatisés : `PENDING` ➜ `SENT` ✔ ou `FAILED` ❌ (avec retry programmé). |
+| 🎯 **API REST hyper-propre** | Endpoints auto-documentés via OpenAPI 3 + DTOs validés. |
+| 🗃️ **Persistance fiable** | MySQL en prod, scripts Flyway, indices optimisés. |
+| 🔧 **Config externalisée** | Profils `dev` (H2) & `prod` (MySQL) switchables en 1 variable. |
 
 ---
 
@@ -50,12 +53,6 @@ CREATE DATABASE transport_db CHARACTER SET utf8mb4;
 CREATE USER 'transport'@'localhost' IDENTIFIED BY 'Ch@ng3M3!';
 GRANT ALL PRIVILEGES ON transport_db.* TO 'transport'@'localhost';
 FLUSH PRIVILEGES;
-```
-
-### 3. Variables d’environnement (secrets)
-```bash
-export DB_PASSWORD='Ch@ng3M3!'
-export MAIL_PASSWORD='votre-mot-de-passe-application-gmail'
 ```
 ---
 
