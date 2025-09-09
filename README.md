@@ -1,209 +1,188 @@
-# 📧 Microservice de Notifications - Suivi d'Arrivée
+Voici le README corrigé et enrichi :
 
-## 📋 Table des Matières
-- [🎯 Description du Projet](#-description-du-projet)
-- [🛠️ Technologies Utilisées](#️-technologies-utilisées)
-- [🚀 Fonctionnalités](#-fonctionnalités)
-- [📦 Installation et Configuration](#-installation-et-configuration)
-- [🔧 Structure du Projet](#-structure-du-projet)
-- [📡 API Endpoints](#-api-endpoints)
-- [🧪 Tests](#-tests)
-- [📧 Configuration Email](#-configuration-email)
-- [🗄️ Configuration Base de Données](#️-configuration-base-de-données)
-- [📸 Captures d'Écran](#-captures-décran)
+# 📧 Microservice de Notifications – Suivi d’Arrivée
 
-## 🎯 Description du Projet
+## 📋 Table des matières
+- [🎯 Description](#-description)
+- [🛠️ Stack technique](#️-stack-technique)
+- [✨ Fonctionnalités](#-fonctionnalités)
+- [🚀 Démarrage rapide](#-démarrage-rapide)
+- [📦 Installation complète](#-installation-complète)
+- [🔧 Structure du projet](#-structure-du-projet)
+- [📡 Endpoints REST](#-endpoints-rest)
+- [🧪 Tester l’API](#-tester-lapi)
+- [📧 Configuration e-mail (Gmail)](#-configuration-e-mail-gmail)
+- [🗄️ Configuration base de données](#️-configuration-base-de-données)
+- [🔐 Sécurité des secrets](#-sécurité-des-secrets)
+- [📸 Captures d’écran](#-captures-décran)
+- [📚 Annexes](#-annexes)
 
-Microservice Spring Boot dédié à la gestion des notifications de suivi d'arrivée pour une plateforme de transport de marchandises. Ce service fait partie d'une architecture microservices et permet l'envoi de notifications via email, SMS et push notifications.
+---
 
-## 🛠️ Technologies Utilisées
+## 🎯 Description
+Microservice Spring Boot chargé d’émettre des notifications de suivi d’arrivée aux clients d’une plate-forme de transport de marchandises.  
+Il s’intègre dans une architecture micro-services et envoie les alertes par **e-mail**, **SMS** et **push** (multicanal).
 
-- **Java 21** - Langage de programmation
-- **Spring Boot 3.5.4** - Framework principal
-- **Spring Data JPA** - Persistance des données
-- **Spring Mail** - Envoi d'emails
-- **H2 Database** - Base de données en mémoire (développement)
-- **MySQL** - Base de données de production
-- **Maven** - Gestion des dépendances
-- **Git** - Versionning
+---
 
-## 🚀 Fonctionnalités
+## 🛠️ Stack technique
+| Technologie | Version / Remarque |
+|-------------|--------------------|
+| Java | 17 (LTS) |
+| Spring Boot | 3.5.4 |
+| Spring Data JPA | Persistance |
+| Spring Mail | Envoi d’e-mails |
+| MySQL | Base de production |
+| Lombok | Réduction du boiler-plate |
+| Maven | 3.9+ |
+| Git | Versionning |
 
-- ✅ Envoi de notifications d'arrivée en temps réel
-- ✅ Support multi-canaux (Email, SMS, Push)
-- ✅ API RESTful complète
-- ✅ Persistance des données
-- ✅ Gestion des statuts de notifications
-- ✅ Configuration externalisée
+---
 
-## 📦 Installation et Configuration
+## ✨ Fonctionnalités
+- Notification « colis en approche » en temps réel  
+- Envoi **EMAIL / SMS / PUSH** (ou `ALL`)  
+- Statuts : `PENDING` → `SENT` ou `FAILED`  
+- API REST documentée + DTO de requête  
+- Persistance MySQL + scripts d’initialisation  
+- Configuration externalisée (profils `dev` / `prod`)
 
-### 1. Prérequis
-```bash
-# Java 21
-sudo apt install openjdk-21-jdk
+---
 
-# Maven
-sudo apt install maven
-
-# MySQL (optionnel)
-sudo apt install mysql-server
-```
-
-### 2. Clonage du Repository
+## 🚀 Démarrage rapide
 ```bash
 git clone https://github.com/Safae26/suivi-d-arriv-e.git
 cd suivi-d-arriv-e
+mvn clean package
+java -jar target/notifications-0.0.1-SNAPSHOT.jar
 ```
+Le service écoute sur **http://localhost:8082**
 
-### 3. Configuration
-Editez le fichier `src/main/resources/application.properties` :
+---
 
-```properties
-# Configuration de base
-spring.application.name=notifications
-server.port=8082
+## 📦 Installation complète
 
-# Base de données H2 (développement)
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.username=sa
-spring.datasource.password=
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-
-# Configuration Gmail
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=votre.email@gmail.com
-spring.mail.password=votre-mot-de-passe-application
-```
-
-### 4. Construction et Lancement
+### 1. Prérequis
 ```bash
-# Compilation
-mvn clean compile
-
-# Lancement
-mvn spring-boot:run
-
-# Ou depuis IDE
-# Run NotificationsApplication.java
+# Ubuntu / Debian
+sudo apt update
+sudo apt install openjdk-17-jdk maven mysql-server -y
 ```
 
-## 🔧 Structure du Projet
-
-```
-suivi-d-arriv-e/
-├── src/
-│   └── main/
-│       ├── java/transport/notifications/
-│       │   ├── NotificationsApplication.java
-│       │   ├── controller/
-│       │   │   └── NotificationController.java
-│       │   ├── model/
-│       │   │   └── Notification.java
-│       │   ├── repository/
-│       │   │   └── NotificationRepository.java
-│       │   ├── service/
-│       │   │   ├── NotificationService.java
-│       │   │   ├── EmailService.java
-│       │   │   ├── SmsService.java
-│       │   │   └── PushNotificationService.java
-│       │   └── dto/
-│       │       └── NotificationRequest.java
-│       └── resources/
-│           └── application.properties
-├── pom.xml
-└── README.md
+### 2. Base MySQL
+```sql
+CREATE DATABASE transport_db CHARACTER SET utf8mb4;
+CREATE USER 'transport'@'localhost' IDENTIFIED BY 'Ch@ng3M3!';
+GRANT ALL PRIVILEGES ON transport_db.* TO 'transport'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-## 📡 API Endpoints
+### 3. Variables d’environnement (secrets)
+```bash
+export DB_PASSWORD='Ch@ng3M3!'
+export MAIL_PASSWORD='votre-mot-de-passe-application-gmail'
+```
+> ⚠️ **Ne jamais commiter** `application-prod.properties` contenant les vrais mots de passe.
 
-### POST /api/notifications/arrival-tracking
-Envoie une notification de suivi d'arrivée
+---
 
-**Body:**
+## 🔧 Structure du projet
+```
+transport/
+└── notifications/
+    ├── NotificationsApplication.java
+    ├── controller/
+    │   └── NotificationController.java
+    ├── dto/
+    │   └── NotificationRequest.java
+    ├── model/
+    │   └── Notification.java
+    ├── repository/
+    │   └── NotificationRepository.java
+    └── service/
+        ├── NotificationService.java
+        ├── EmailService.java
+        ├── SmsService.java
+        └── PushNotificationService.java
+```
+
+---
+
+## 📡 Endpoints REST
+Base : `http://localhost:8082/api/notifications`
+
+| Méthode | URL | Description | Body JSON |
+|---------|-----|-------------|-----------|
+| **POST** | `/arrival-tracking` | Créer + envoyer une notification | [voir ci-dessous](#exemple-de-requête) |
+| **GET**  | `/user/{userId}` | Lister les notifications d’un utilisateur | - |
+| **GET**  | `/status/{status}` | Filtrer par statut (`PENDING`, `SENT`, `FAILED`) | - |
+
+### Exemple de requête
 ```json
+POST /api/notifications/arrival-tracking
+Content-Type: application/json
+
 {
-    "userId": "string",
-    "title": "string",
-    "message": "string",
-    "channel": "EMAIL|SMS|PUSH|ALL",
-    "transportRequestId": "string",
-    "estimatedArrivalTime": "datetime (optionnel)"
+  "userId": "client@demo.com",
+  "title": "Votre colis arrive",
+  "message": "Livraison estimée dans 30 min",
+  "channel": "EMAIL",
+  "transportRequestId": "TR-2024-001",
+  "estimatedArrivalTime": "2024-09-09T16:30:00"
 }
 ```
+Réponse : `200 OK` + objet `Notification` créé.
 
-**Exemple:**
+---
+
+## 🧪 Tester l’API
+
+### cURL
 ```bash
 curl -X POST http://localhost:8082/api/notifications/arrival-tracking \
   -H "Content-Type: application/json" \
-  -d '{
-    "userId": "client@example.com",
-    "title": "Votre colis arrive",
-    "message": "Livraison dans 30 minutes",
-    "channel": "EMAIL",
-    "transportRequestId": "TR-2024-001"
-  }'
+  -d '{"userId":"test@demo.com","title":"Test","message":"Hello","channel":"EMAIL","transportRequestId":"TEST-001"}'
 ```
 
-### GET /api/notifications/user/{userId}
-Récupère les notifications d'un utilisateur
-
-### GET /api/notifications/status/{status}
-Récupère les notifications par statut
-
-## 🧪 Tests
-
-### Test avec PowerShell
+### PowerShell
 ```powershell
-$testData = '{
-    "userId": "test@example.com",
-    "title": "Test Notification",
-    "message": "Ceci est un test",
-    "channel": "EMAIL",
-    "transportRequestId": "TEST-001"
-}'
+$body = @{
+    userId = "test@demo.com"
+    title  = "Test"
+    message = "Hello depuis PowerShell"
+    channel = "ALL"
+    transportRequestId = "PS-001"
+} | ConvertTo-Json
 
-Invoke-RestMethod -Uri "http://localhost:8082/api/notifications/arrival-tracking" `
-  -Method Post `
-  -ContentType "application/json" `
-  -Body $testData
+Invoke-RestMethod -Uri http://localhost:8082/api/notifications/arrival-tracking -Method Post -Body $body -ContentType "application/json"
 ```
 
-### Test avec curl
-```bash
-curl -X POST http://localhost:8082/api/notifications/arrival-tracking \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"test@example.com","title":"Test","message":"Test","channel":"EMAIL","transportRequestId":"TEST-001"}'
-```
+---
 
-## 📧 Configuration Email
+## 📧 Configuration e-mail (Gmail)
 
-### Configuration Gmail
-1. **Activer la validation 2 étapes**
-   - Allez sur https://myaccount.google.com/
-   - Activez "Validation en deux étapes"
+1. Activez **l’authentification à 2 facteurs** sur votre compte Google.  
+2. Générez un **mot de passe d’application** :  
+   https://myaccount.google.com/apppasswords  
+3. Renseignez-le dans `application-prod.properties` :
 
-2. **Générer un mot de passe d'application**
-   - Allez sur https://myaccount.google.com/apppasswords
-   - Sélectionnez "Mail" → "Other" (nommez-le "Spring Boot")
-   - Copiez le mot de passe généré
-
-3. **Configurer application.properties**
 ```properties
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
-spring.mail.username=votre.email@gmail.com
-spring.mail.password=votre-mot-de-passe-application
+spring.mail.username=s.eraji@edu.umi.ac.ma
+spring.mail.password=${MAIL_PASSWORD}
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
 ```
 
-## 🗄️ Configuration Base de Données
+---
 
-### Option 1: H2 Database (Développement)
+## 🗄️ Configuration base de données
+
+### Profil `dev` (H2 embarquée)
 ```properties
-spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.url=jdbc:h2:mem:transport_db
 spring.datasource.driverClassName=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=
@@ -211,26 +190,71 @@ spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 spring.h2.console.enabled=true
 ```
 
-### Option 2: MySQL (Production)
+### Profil `prod` (MySQL)
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/transport_db
-spring.datasource.username=root
-spring.datasource.password=votre-mot-de-passe
+spring.datasource.username=transport
+spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=update
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 ```
 
-## 📸 Captures d'Écran
+---
 
-<!-- Ajoutez vos captures d'écran ici -->
-![Architecture Microservices](screenshots/architecture.png)
-*Diagramme d'architecture microservices*
+## 🔐 Sécurité des secrets
+- Utilisez les **variables d’environnement** ou Spring Cloud Config Server.  
+- Ajoutez `application-prod.properties` à `.gitignore`.  
+- Fournissez un template :
+```properties
+spring.mail.password=${MAIL_PASSWORD:changeme}
+spring.datasource.password=${DB_PASSWORD:changeme}
+```
 
-![API Response](screenshots/api-response.png)
-*Réponse de l'API de notifications*
+---
 
-![H2 Console](screenshots/h2-console.png)
-*Console H2 pour visualisation des données*
+## 📸 Captures d’écran
+*(à ajouter dans `/screenshots`)*  
+- `architecture.png` – diagramme micro-services  
+- `api-response.png` – réponse Swagger / Postman  
+- `h2-console.png` – consultation des notifications  
+- `email-received.png` – rendu dans la boîte mail
 
-![Email Reçu](screenshots/email-received.png)
-*Exemple d'email reçu*
+---
+
+## 📚 Annexes
+
+### Collection Postman
+Importez le fichier `postman/Notifications.postman_collection.json` (à créer) :
+
+```json
+{
+  "info": { "name": "Notifications API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "item": [
+    {
+      "name": "Send Arrival Tracking",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"client@demo.com\",\n  \"title\": \"Colis en approche\",\n  \"message\": \"Livraison dans 30 min\",\n  \"channel\": \"EMAIL\",\n  \"transportRequestId\": \"TR-2024-001\"\n}"
+        },
+        "url": "{{baseUrl}}/api/notifications/arrival-tracking"
+      }
+    }
+  ]
+}
+```
+
+### Auteur
+**Safae ER-AJI** – s.eraji@edu.umi.ac.ma
+
+Points clés apportés :
+1. Séparation claire des profils `dev`/`prod`  
+2. Secrets externalisés (variables d’environnement)  
+3. Versions corrigées (Java 17, Spring Boot 3.5.4)  
+4. Instructions MySQL complètes  
+5. Templates prêts à copier-coller (cURL, PowerShell, Postman)  
+6. Section sécurité + bonnes pratiques  
+7. Structure markdown plus lisible et cohérente avec le code fourni.
