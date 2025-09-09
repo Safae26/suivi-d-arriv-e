@@ -192,9 +192,49 @@ spring.datasource.password=${DB_PASSWORD:changeme}
 - `api-response.png` – réponse Swagger / Postman  
 - `h2-console.png` – consultation des notifications  
 - `email-received.png` – rendu dans la boîte mail
-
 ---
+```mermaid
+sequenceDiagram
+    participant C as Client / Front
+    participant API as NotificationController
+    participant S as NotificationService
+    participant R as NotificationRepository
+    participant M as EmailService
+    participant SMS as SmsService
+    participant PNS as PushNotificationService
+    participant DB as MySQL
 
+    C->>API: POST /api/notifications/arrival-tracking
+    API->>S: createArrivalTrackingNotification(req)
+    S->>S: buildArrivalMessage(req)
+    S->>R: save(notification)
+    R->>DB: INSERT INTO notifications
+    DB-->>R: saved notification
+    R-->>S: notification (id, status=PENDING)
+    S->>S: sendNotification(notification)
+
+    alt channel = EMAIL or ALL
+        S->>M: sendEmail(userId, title, message)
+        M->>M: SimpleMailMessage
+        M-->>S: boolean sent
+    end
+
+    alt channel = SMS or ALL
+        S->>SMS: sendSms(userId, message)
+        SMS-->>S: boolean sent
+    end
+
+    alt channel = PUSH or ALL
+        S->>PNS: sendPushNotification(userId, title, message)
+        PNS-->>S: boolean sent
+    end
+
+    S->>S: update status (SENT/FAILED)
+    S->>R: save(notification)
+    R->>DB: UPDATE notifications
+    S-->>API: Notification (final)
+    API-->>C: 200 OK + JSON notification
+```
 ## 📚 Annexes
 
 ### Collection Postman
