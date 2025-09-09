@@ -131,6 +131,14 @@ Base : `http://localhost:8082/api/notifications`
 | **GET**  | `/user/{userId}` | Lister les notifications d’un utilisateur | 
 | **GET**  | `/status/{status}` | Filtrer par statut (`PENDING`, `SENT`, `FAILED`) |
 
+#### Exemples de GET
+
+Notifications d’un utilisateur :
+![user_notif](screens/user_id.png)
+
+Filtre par statut (SENT) :
+![status_sent](screens/status_sent.png)
+
 ---
 
 **Safae ERAJI**
