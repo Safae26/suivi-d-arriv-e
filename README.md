@@ -289,30 +289,4 @@ sequenceDiagram
     deactivate API
   end
 ```
-## 📚 Annexes
-
-### Collection Postman
-Importez le fichier `postman/Notifications.postman_collection.json` (à créer) :
-
-```json
-{
-  "info": { "name": "Notifications API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
-  "item": [
-    {
-      "name": "Send Arrival Tracking",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"userId\": \"client@demo.com\",\n  \"title\": \"Colis en approche\",\n  \"message\": \"Livraison dans 30 min\",\n  \"channel\": \"EMAIL\",\n  \"transportRequestId\": \"TR-2024-001\"\n}"
-        },
-        "url": "{{baseUrl}}/api/notifications/arrival-tracking"
-      }
-    }
-  ]
-}
-```
-
-### Auteur
 **Safae ERAJI** – s.eraji@edu.umi.ac.ma
