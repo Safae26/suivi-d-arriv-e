@@ -140,6 +140,9 @@ Filtre par statut (SENT) :
 
 ![status_sent](screens/status_sent.png)
 
+
+Pour le moment, les services **SMS** et **Push** s'affichent juste dans la console. Si nous voulons les intégrer, on utilise : API Twilio, Vonage,.. pour SMS, et Firebase Cloud Messaging (FCM) pour Android/iOS concernant le Push.
+
 ---
 
 **Safae ERAJI**
